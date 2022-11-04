@@ -83,6 +83,24 @@
 .search-bar::placeholder {
   font-size: 15px;
 }
+
+.footer {
+  height: 55px;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+
+  position: static;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin-top: 20px;
+}
+
+a:hover {
+  cursor: pointer;
+}
 </style>
 
 <template>
@@ -109,9 +127,52 @@
         </text>
       </div>
       <div class="crypto-price">
-        <text> ${{ parseFloat(crypto.priceUsd).toFixed(2) }} </text>
+        <text>
+          ${{
+            parseFloat(crypto.priceUsd).toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
+          }}
+        </text>
       </div>
     </template>
+  </div>
+
+  <div class="footer">
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+        <li
+          v-if="!onSearch"
+          class="page-item"
+          :class="page === 1 ? 'disabled' : ''"
+        >
+          <a class="page-link" @click="prevPage">Previous</a>
+        </li>
+        <li
+          v-else
+          class="page-item"
+          :class="searchPage === 1 ? 'disabled' : ''"
+        >
+          <a class="page-link" @click="prevSearchPage">Previous</a>
+        </li>
+
+        <li
+          v-if="!onSearch"
+          class="page-item"
+          :class="page === lastPage ? 'disabled' : ''"
+        >
+          <a class="page-link" @click="nextPage">Next</a>
+        </li>
+        <li
+          v-else
+          class="page-item"
+          :class="searchPage === lastSearchPage ? 'disabled' : ''"
+        >
+          <a class="page-link" @click="nextSearchPage">Next</a>
+        </li>
+      </ul>
+    </nav>
   </div>
 
   <!-- <RouterView /> -->
@@ -137,22 +198,72 @@ export default {
     return {
       crypto: [],
       search: "",
+      page: 1,
+      loading: false,
+      perPage: 10,
+      searchPage: 1,
+      onSearch: false,
+      searchList: [],
     };
   },
   computed: {
     submit() {
       if (this.search) {
         // this.displayCrypto = this.crypto.filter()
-        const searchList = this.crypto.filter((item) =>
+        this.onSearch = true;
+        this.searchList = this.crypto.filter((item) =>
           this.search
             .toLowerCase()
             .split(" ")
             .every((s) => item.id.toLowerCase().includes(s))
         );
-        return searchList;
+        let start = (this.searchPage - 1) * this.perPage;
+        let end = start + this.perPage;
+        this.loading = false;
+        console.log(this.searchList);
+        console.log(this.searchList.slice(start, end));
+        console.log(this.searchPage);
+        return this.searchList.slice(start, end);
       } else {
-        return this.crypto;
+        this.onSearch = false;
+        let start = (this.page - 1) * this.perPage;
+        let end = start + this.perPage;
+        this.loading = false;
+        return this.crypto.slice(start, end);
       }
+    },
+    showRepos() {
+      let start = (this.page - 1) * this.perPage;
+      let end = start + this.perPage;
+      this.loading = false;
+      return this.crypto.slice(start, end);
+    },
+    lastPage() {
+      // console.log("last");
+      let length = this.crypto.length;
+      return Math.round(length / this.perPage);
+    },
+    lastSearchPage() {
+      let length = this.searchList.length;
+      return Math.round(length / this.perPage);
+    },
+  },
+  methods: {
+    prevPage() {
+      this.loading = true;
+      this.page--;
+    },
+    nextPage() {
+      this.loading = true;
+      this.page++;
+    },
+    prevSearchPage() {
+      this.loading = true;
+      this.searchPage--;
+    },
+    nextSearchPage() {
+      this.loading = true;
+      this.searchPage++;
     },
   },
 };

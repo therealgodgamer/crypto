@@ -188,7 +188,7 @@ export default {
       method: "GET",
       redirect: "follow",
     };
-    const apiUrl = "http://api.coincap.io/v2/assets";
+    const apiUrl = "https://api.coincap.io/v2/assets";
     const response = await fetch(apiUrl, requestOptions);
     const data = await response.json();
 

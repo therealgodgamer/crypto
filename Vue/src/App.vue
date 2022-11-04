@@ -220,9 +220,7 @@ export default {
         let start = (this.searchPage - 1) * this.perPage;
         let end = start + this.perPage;
         this.loading = false;
-        console.log(this.searchList);
-        console.log(this.searchList.slice(start, end));
-        console.log(this.searchPage);
+
         return this.searchList.slice(start, end);
       } else {
         this.onSearch = false;

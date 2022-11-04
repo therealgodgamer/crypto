@@ -178,7 +178,7 @@ a:hover {
   <!-- <RouterView /> -->
 </template>
 
-<script lang="ts">
+<script lang="js">
 // import { RouterLink, RouterView } from 'vue-router'
 
 export default {
